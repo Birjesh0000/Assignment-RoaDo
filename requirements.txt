@@ -1,2 +1,14 @@
+# Database
 pymongo==4.6.1
+psycopg2-binary==2.9.9
+
+# Data processing
+pandas==2.1.4
+numpy==1.26.3
+
+# Statistical analysis
+scipy==1.12.0
+scikit-learn==1.4.1
+
+# Environment & utilities
 python-dotenv==1.0.0

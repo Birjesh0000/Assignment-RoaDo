@@ -9,7 +9,9 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const db = require('./src/config/database');
+const postgres = require('./src/config/postgres');
 const analyticsRoutes = require('./src/routes/analytics');
+const postgresRoutes = require('./src/routes/postgres');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -43,6 +45,7 @@ app.get('/api/health', (req, res) => {
 
 // Analytics API routes
 app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1/postgres', postgresRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -61,10 +64,14 @@ async function start() {
     // Connect to MongoDB
     await db.connect(MONGODB_URI, DB_NAME);
     
+    // Connect to PostgreSQL
+    await postgres.connect();
+    
     // Start Express server
     app.listen(PORT, () => {
       console.log(`✓ Server running on http://localhost:${PORT}`);
-      console.log(`✓ API endpoints available at http://localhost:${PORT}/api/v1/analytics`);
+      console.log(`✓ MongoDB Analytics endpoints: http://localhost:${PORT}/api/v1/analytics`);
+      console.log(`✓ PostgreSQL Analytics endpoints: http://localhost:${PORT}/api/v1/postgres`);
       console.log(`✓ Health check at http://localhost:${PORT}/api/health\n`);
     });
   } catch (error) {
@@ -77,6 +84,7 @@ async function start() {
 process.on('SIGINT', async () => {
   console.log('\nShutting down gracefully...');
   await db.close();
+  await postgres.close();
   process.exit(0);
 });
 
